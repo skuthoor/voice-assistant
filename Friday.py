@@ -7,12 +7,13 @@ import wikipedia
 from gtts import gTTS
 import os
 from PyDictionary import PyDictionary
+import smtplib
 
 
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
-print(voices[2].id)
-engine.setProperty('voice',voices[0].id)
+#print(voices[2].id)
+engine.setProperty('voice',voices[1].id)
 
 def speak(audio) :
     engine.say(audio)
@@ -64,6 +65,14 @@ def search(url):
 def chromesearch(url) :
     webbrowser.get('C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s').open(url)
 
+def sendemail(to,content) :
+    server = smtplib.SMTP('smpt.gmail.com',587)
+    server.ehlo()
+    server.starttls()
+    server.login('gmail','password')
+    server.sendmail('email',to,content)
+    server.close
+
 if __name__ == "__main__" :
     speak('hello Sanjay')
     wishMe()
@@ -97,16 +106,29 @@ if __name__ == "__main__" :
             speak("Sir, the time is ")
             speak(strTime)
 
-        elif 'find the meaning' in command :
-            end = command.find(' ')        
-            data = command[0 : end]
-            meaning = PyDictionary().meaning(data)
-            speak(meaning)
+        #elif 'find the meaning' in command :
+        #    end = command.find(' ')        
+         #   data = command[0 : end]
+          #  meaning = PyDictionary().meaning(data)
+           # speak(meaning)
 
-        elif 'what' in command :
-            webbrowser.open_new_tab(command)
+        #elif 'what' in command :
+          #  webbrowser.open_new_tab(command)
             
-
+        elif 'send mail' in command :
+            try:
+                speak('what is the subject')
+                subject = listen()
+                speak('what should i say')
+                message = listen()
+                content = 'subject: {}\n\n{}'.format(subject,message)
+                speak('whom to send')
+                to = listen()
+                sendemail(to,content)
+                speak('email has been sent!')
+            except Exception as e:
+                print(e)
+                speak('Sorry. I am unable to send this mail.')
         
 
 
